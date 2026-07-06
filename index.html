@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Типология заказчиков · Профи.ру</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFAF9; --ink:#17181C; --muted:#6E6F69;
+    --line:#E6E3DC; --line-strong:#D8D4CA; --card:#FFFFFF;
+    --d:#1F7A6A; --o:#C07A12; --z:#4E6A93; --sv:#A34E76; --neutral:#77776E;
+    --radius:14px; --maxw:760px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:"Manrope",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.45;min-height:100vh;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:40px 24px 80px;}
+
+  .masthead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:28px;}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .ticks{display:flex;gap:4px;align-items:flex-end;height:14px;}
+  .ticks i{width:1px;height:6px;background:var(--line-strong);display:block;}
+  .ticks i:nth-child(5n+1){height:12px;background:var(--muted);}
+
+  .notice{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:8px 15px;border-radius:999px;margin-bottom:14px;}
+  .notice svg{width:15px;height:15px;flex:none;opacity:.9;}
+  .subnote{color:var(--muted);font-size:15px;max-width:50ch;margin:0 0 34px;}
+
+  .qblock{margin-bottom:34px;}
+  .step-label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:12px;}
+  .qtitle{font-family:"Unbounded",sans-serif;font-weight:600;font-size:clamp(19px,3.4vw,27px);line-height:1.12;letter-spacing:-.01em;margin:0 0 18px;}
+
+  /* segmented control (Q1) */
+  .segmented{display:flex;border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px;background:var(--card);}
+  .seg-opt{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;min-height:46px;padding:10px 8px;border-radius:999px;border:none;background:transparent;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;line-height:1.15;}
+  .seg-opt:hover{color:var(--ink);}
+  .seg-opt[aria-pressed="true"]{background:var(--ink);color:#fff;}
+  .seg-opt:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  @media(max-width:480px){.seg-opt{font-size:12.5px;padding:12px 4px;}}
+
+  /* chips (Q2) */
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:560px){.options{grid-template-columns:1fr;}}
+  .chip{position:relative;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 16px 16px 46px;font-family:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;transition:border-color .15s ease,background .15s ease,transform .08s ease;}
+  .chip:hover{border-color:var(--line-strong);}
+  .chip:active{transform:scale(.99);}
+  .chip .box{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;border:1.5px solid var(--line-strong);border-radius:6px;transition:background .15s ease,border-color .15s ease;}
+  .chip .box::after{content:"";position:absolute;inset:0;background:no-repeat center/11px url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>");opacity:0;transition:opacity .12s ease;}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .chip[aria-pressed="true"] .box{background:var(--ink);border-color:#fff;}
+  .chip[aria-pressed="true"] .box::after{opacity:1;}
+  .chip:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .chip:disabled{opacity:.4;cursor:not-allowed;}
+  .chip:disabled:hover{border-color:var(--line);}
+  .chip.none{grid-column:1/-1;color:var(--muted);}
+  .chip.none[aria-pressed="true"]{color:#fff;}
+
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;}
+  .count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .btn-ghost{font-family:inherit;font-size:13px;font-weight:600;background:transparent;color:var(--muted);border:1px solid var(--line-strong);border-radius:999px;padding:9px 18px;cursor:pointer;transition:background .15s ease,color .15s ease;}
+  .btn-ghost:hover{background:#fff;color:var(--ink);}
+  .btn-ghost:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .btn-ghost:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* result */
+  .result{margin-top:16px;padding-top:26px;border-top:1px solid var(--line);}
+  .result-eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:16px;}
+  .empty{border:1px dashed var(--line-strong);border-radius:20px;padding:30px 28px;text-align:center;color:var(--muted);font-size:15px;}
+  .seg-card{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--card);margin-bottom:24px;}
+  .seg-top{padding:28px 28px 24px;border-top:5px solid var(--seg,var(--ink));transition:border-color .3s ease;}
+  .seg-name{font-family:"Unbounded",sans-serif;font-weight:600;font-size:clamp(28px,5.4vw,42px);line-height:1.02;letter-spacing:-.02em;color:var(--seg,var(--ink));margin:0 0 10px;transition:color .3s ease;}
+  .seg-desc{font-size:16px;color:var(--ink);margin:0;max-width:52ch;}
+  .seg-values{padding:0 28px 24px;}
+  .seg-values h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:20px 0 12px;}
+  .val-tags{display:flex;flex-wrap:wrap;gap:8px;}
+  .val-tags span{font-size:13px;font-weight:500;background:color-mix(in srgb, var(--seg,var(--ink)) 10%, transparent);color:var(--seg,var(--ink));border:1px solid color-mix(in srgb, var(--seg,var(--ink)) 22%, transparent);border-radius:999px;padding:6px 12px;}
+
+  .breakdown h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 16px;}
+  .bar-row{display:grid;grid-template-columns:130px 1fr 34px;align-items:center;gap:12px;margin-bottom:12px;font-size:14px;}
+  @media(max-width:480px){.bar-row{grid-template-columns:104px 1fr 30px;font-size:13px;gap:8px;}}
+  .bar-label{color:var(--ink);font-weight:500;}
+  .bar-label.win{font-weight:700;}
+  .bar-track{height:8px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .bar-fill{height:100%;width:0;border-radius:999px;background:var(--barc);transition:width .55s cubic-bezier(.22,.61,.36,1);}
+  .bar-val{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;}
+
+  .copy-row{margin-top:22px;}
+  .copy-btn{font-family:inherit;font-size:14px;font-weight:600;background:transparent;color:var(--ink);border:1px solid var(--line-strong);border-radius:999px;padding:11px 22px;cursor:pointer;transition:background .15s ease;}
+  .copy-btn:hover{background:#fff;}
+  .copy-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+
+  .method{margin-top:38px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.6;}
+  .method b{color:var(--ink);font-weight:600;}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:14px;font-weight:500;padding:12px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:10;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .hidden{display:none;}
+
+  @media(prefers-reduced-motion:reduce){.bar-fill,.seg-top,.seg-name{transition:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <span class="eyebrow">Типология заказчиков · Профи.ру</span>
+    <span class="ticks" aria-hidden="true"></span>
+  </div>
+
+  <div class="notice">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 11s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/><path d="M14.12 14.12A3 3 0 1 1 9.88 9.88"/></svg>
+    Специалисты ответ не увидят
+  </div>
+  <p class="subnote">По ответам мы предложим задачу более подходящим специалистам.</p>
+
+  <!-- Q1 -->
+  <div class="qblock">
+    <p class="step-label">Вопрос 1</p>
+    <h2 class="qtitle">Что для вас важнее в этой задаче — цена или качество?</h2>
+    <div class="segmented" id="segmented" role="group" aria-label="Цена или качество"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="qblock">
+    <p class="step-label">Вопрос 2</p>
+    <h2 class="qtitle">Какие два пункта важнее всего в специалисте?</h2>
+    <div class="options" id="options" role="group" aria-label="Характеристики"></div>
+    <div class="toolbar">
+      <span class="count" id="count">Выбрано: 0 из 2</span>
+      <button class="btn-ghost" id="reset" disabled>Сбросить</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <section class="result" aria-live="polite">
+    <p class="result-eyebrow" id="resultEyebrow">Результат</p>
+    <div class="empty" id="empty">Ответьте на оба вопроса — сегмент появится здесь.</div>
+    <div id="resultBody" class="hidden">
+      <div class="seg-card" id="segCard">
+        <div class="seg-top">
+          <h2 class="seg-name" id="segName"></h2>
+          <p class="seg-desc" id="segDesc"></p>
+        </div>
+        <div class="seg-values" id="segValuesWrap">
+          <h3>Что для них в приоритете</h3>
+          <div class="val-tags" id="valTags"></div>
+        </div>
+      </div>
+      <div class="breakdown">
+        <h3>Близость ко всем профилям</h3>
+        <div id="bars"></div>
+      </div>
+      <div class="copy-row"><button class="copy-btn" id="copy">Скопировать результат</button></div>
+    </div>
+  </section>
+
+  <p class="method">
+    <b>Как считается.</b> Ответы двух вопросов складываются в баллы по матрице весов: позиция «цена ↔ качество» плюс два отмеченных пункта.
+    Сегмент с наибольшей суммой — результат. «Ничего из перечисленного» относит к нейтральному сегменту.
+  </p>
+
+</div>
+
+<div class="toast" id="toast">Результат скопирован</div>
+
+<script>
+(function(){
+  // segments: d=Доверяющие, o=Охотники, z=Закрытые, sv=Своячники
+
+  // Q1 — price↔quality axis. "Цена важнее" and "Баланс" — из исходной матрицы.
+  // "Качество важнее" исходной строки не имело: веса заданы как анти-Охотник / про-Доверяющие (правится в одну строку).
+  var priceOptions = [
+    { id:'price',   label:'Недорогая цена важнее', full:'Недорогая цена важнее качества', s:{d:0,o:2,z:1,sv:0} },
+    { id:'balance', label:'Баланс',                full:'Баланс цены и качества',         s:{d:1,o:2,z:1,sv:1} },
+    { id:'quality', label:'Качество важнее цены',  full:'Качество важнее цены',           s:{d:2,o:0,z:1,sv:1} }
+  ];
+
+  // Q2 — остальные характеристики (ценовые убраны)
+  var attributes = [
+    { id:'punctual', label:'Пунктуальность',                 s:{d:2,o:0,z:0,sv:2} },
+    { id:'engaged',  label:'Вовлечённость в задачу',         s:{d:2,o:0,z:0,sv:1} },
+    { id:'polite',   label:'Вежливость',                     s:{d:0,o:1,z:0,sv:0} },
+    { id:'warranty', label:'Гарантия на работу',             s:{d:1,o:0,z:1,sv:0} },
+    { id:'clean',    label:'Соблюдение чистоты',             s:{d:0,o:0,z:0,sv:2} },
+    { id:'equipped', label:'Есть всё необходимое для работ', s:{d:0,o:0,z:0,sv:1} }
+  ];
+
+  var segMeta = {
+    d:  { name:'Доверяющие', color:'var(--d)',  raw:'#1F7A6A', desc:'Ценят надёжность: чтобы специалист пришёл вовремя и вникал в задачу.', vals:['Пунктуальность','Вовлечённость в задачу'] },
+    o:  { name:'Охотники',   color:'var(--o)',  raw:'#C07A12', desc:'Ищут лучшее соотношение цены и качества, чувствительны к цене.',        vals:['Соотношение цены и качества','Недорогие цены'] },
+    z:  { name:'Закрытые',   color:'var(--z)',  raw:'#4E6A93', desc:'Смотрят на цену и гарантию, без ярко выраженных дополнительных требований.', vals:['Цена','Гарантия на работу'] },
+    sv: { name:'Своячники',  color:'var(--sv)', raw:'#A34E76', desc:'Хотят, чтобы специалист вёл себя как свой: вовремя, аккуратно и со своим инструментом.', vals:['Пунктуальность','Соблюдение чистоты'] }
+  };
+  var order = ['d','o','z','sv'];
+
+  var priceChoice = null, selected = {}, noneSelected = false, lastText = '', MAX = 2;
+
+  var segmentedEl = document.getElementById('segmented');
+  var optionsEl   = document.getElementById('options');
+  var countEl     = document.getElementById('count');
+  var resetEl     = document.getElementById('reset');
+  var emptyEl     = document.getElementById('empty');
+  var bodyEl      = document.getElementById('resultBody');
+  var eyebrowEl   = document.getElementById('resultEyebrow');
+
+  var ticks = document.querySelector('.ticks');
+  for(var t=0;t<21;t++){ ticks.appendChild(document.createElement('i')); }
+
+  // build Q1
+  priceOptions.forEach(function(p){
+    var b = document.createElement('button');
+    b.className = 'seg-opt'; b.type = 'button';
+    b.setAttribute('aria-pressed','false'); b.dataset.id = p.id;
+    b.textContent = p.label;
+    b.title = p.full;
+    b.addEventListener('click', function(){ priceChoice = p.id; update(); });
+    segmentedEl.appendChild(b);
+  });
+
+  // build Q2
+  attributes.forEach(function(a){ optionsEl.appendChild(makeChip(a.id, a.label, false)); });
+  optionsEl.appendChild(makeChip('__none__', 'Ничего из перечисленного', true));
+
+  function makeChip(id, label, isNone){
+    var b = document.createElement('button');
+    b.className = 'chip' + (isNone ? ' none' : ''); b.type = 'button';
+    b.setAttribute('aria-pressed','false'); b.dataset.id = id;
+    b.innerHTML = '<span class="box" aria-hidden="true"></span>' + label;
+    b.addEventListener('click', function(){ toggle(id, isNone); });
+    return b;
+  }
+
+  function toggle(id, isNone){
+    if(isNone){
+      noneSelected = !noneSelected;
+      if(noneSelected){ selected = {}; }
+    } else {
+      if(noneSelected){ noneSelected = false; }
+      if(selected[id]){ delete selected[id]; }
+      else if(Object.keys(selected).length < MAX){ selected[id] = true; }
+    }
+    update();
+  }
+
+  function score(){
+    if(noneSelected) return { neutral:true };
+    var totals = {d:0,o:0,z:0,sv:0};
+    var p = priceOptions.find(function(x){ return x.id === priceChoice; });
+    if(p){ order.forEach(function(k){ totals[k] += p.s[k]; }); }
+    Object.keys(selected).forEach(function(id){
+      var a = attributes.find(function(x){ return x.id === id; });
+      order.forEach(function(k){ totals[k] += a.s[k]; });
+    });
+    var max = Math.max(totals.d, totals.o, totals.z, totals.sv);
+    var winners = order.filter(function(k){ return totals[k] === max && max > 0; });
+    return { totals:totals, max:max, winners:winners };
+  }
+
+  function update(){
+    var n = Object.keys(selected).length;
+
+    Array.prototype.forEach.call(segmentedEl.children, function(b){
+      b.setAttribute('aria-pressed', b.dataset.id === priceChoice ? 'true' : 'false');
+    });
+
+    optionsEl.querySelectorAll('.chip').forEach(function(chip){
+      var id = chip.dataset.id;
+      if(id === '__none__'){
+        chip.setAttribute('aria-pressed', noneSelected ? 'true' : 'false');
+        chip.disabled = false;
+      } else {
+        var on = !!selected[id];
+        chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+        chip.disabled = (!on && n >= MAX);
+      }
+    });
+
+    countEl.textContent = noneSelected ? 'Выбрано: «Ничего из перечисленного»' : 'Выбрано: ' + n + ' из ' + MAX;
+    resetEl.disabled = !(priceChoice || noneSelected || n > 0);
+
+    var q2ready = noneSelected || n === MAX;
+    var ready = (priceChoice !== null) && q2ready;
+    emptyEl.classList.toggle('hidden', ready);
+    bodyEl.classList.toggle('hidden', !ready);
+
+    if(ready){
+      renderResult(score());
+    } else if(priceChoice === null){
+      emptyEl.textContent = 'Ответьте на первый вопрос — что важнее, цена или качество.';
+    } else if(!q2ready){
+      emptyEl.textContent = (n === 0) ? 'Отметьте два пункта во втором вопросе.' : 'Остался ещё один пункт.';
+    }
+  }
+
+  function renderResult(res){
+    var nameEl=document.getElementById('segName'), descEl=document.getElementById('segDesc');
+    var valWrap=document.getElementById('segValuesWrap'), valTags=document.getElementById('valTags');
+    var card=document.getElementById('segCard'), barsEl=document.getElementById('bars');
+    valTags.innerHTML='';
+
+    if(res.neutral){
+      card.style.setProperty('--seg','var(--neutral)');
+      eyebrowEl.textContent='Результат';
+      nameEl.textContent='Нейтральный сегмент';
+      descEl.textContent='Ни один из четырёх профилей не выражен — приоритеты вне заданной матрицы.';
+      valWrap.style.display='none'; barsEl.innerHTML='';
+      lastText='Сегмент: Нейтральный — ни один из профилей не выражен.';
+      return;
+    }
+    valWrap.style.display='';
+    var winners=res.winners, primary=winners[0];
+    card.style.setProperty('--seg', segMeta[primary].color);
+
+    if(winners.length>1){
+      eyebrowEl.textContent='Пограничный профиль';
+      nameEl.textContent=winners.map(function(k){return segMeta[k].name;}).join(' / ');
+      descEl.textContent='Баллы поровну между профилями — заказчик на стыке сегментов.';
+      var vals=[]; winners.forEach(function(k){ segMeta[k].vals.forEach(function(v){ if(vals.indexOf(v)<0) vals.push(v); }); });
+      vals.forEach(function(v){ addTag(valTags,v); });
+    } else {
+      eyebrowEl.textContent='Результат';
+      nameEl.textContent=segMeta[primary].name;
+      descEl.textContent=segMeta[primary].desc;
+      segMeta[primary].vals.forEach(function(v){ addTag(valTags,v); });
+    }
+
+    var totals=res.totals, max=res.max||1;
+    if(barsEl.children.length!==order.length){
+      barsEl.innerHTML='';
+      order.forEach(function(k){
+        var row=document.createElement('div'); row.className='bar-row'; row.dataset.k=k;
+        row.innerHTML='<span class="bar-label">'+segMeta[k].name+'</span><span class="bar-track"><span class="bar-fill" style="--barc:'+segMeta[k].raw+'"></span></span><span class="bar-val">0</span>';
+        barsEl.appendChild(row);
+      });
+    }
+    order.forEach(function(k){
+      var row=barsEl.querySelector('.bar-row[data-k="'+k+'"]');
+      row.querySelector('.bar-label').classList.toggle('win', winners.indexOf(k)>=0);
+      row.querySelector('.bar-fill').style.width=Math.round((totals[k]/max)*100)+'%';
+      row.querySelector('.bar-val').textContent=totals[k];
+    });
+
+    var pLabel = (priceOptions.find(function(x){return x.id===priceChoice;})||{}).full || '';
+    lastText='Сегмент: '+nameEl.textContent+'\nЦена/качество: '+pLabel+
+      '\nБаллы — Доверяющие: '+totals.d+', Охотники: '+totals.o+', Закрытые: '+totals.z+', Своячники: '+totals.sv;
+  }
+
+  function addTag(container,text){ var s=document.createElement('span'); s.textContent=text; container.appendChild(s); }
+
+  resetEl.addEventListener('click', function(){ priceChoice=null; selected={}; noneSelected=false; update(); });
+
+  var toast=document.getElementById('toast');
+  document.getElementById('copy').addEventListener('click', function(){
+    var done=function(){ toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); },1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(lastText).then(done, function(){ fallbackCopy(lastText); done(); });
+    } else { fallbackCopy(lastText); done(); }
+  });
+  function fallbackCopy(text){ var ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); }
+
+  update();
+})();
+</script>
+</body>
+</html>
